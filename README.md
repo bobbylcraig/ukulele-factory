@@ -3,7 +3,8 @@
 ```
 Author: Bobby Craig
 Date Last Updated: 15 Mar 2017  
-Course: Software Engineering  
+Course: Software Engineering 
+Professor: Peter Baumann
 ```
 
 ## About the Aloha Ukulele Factory
