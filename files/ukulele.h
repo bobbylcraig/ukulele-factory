@@ -5,12 +5,17 @@
 #include <string>
 #include <list>
 
+// PREPROCESSOR DIRECTIVE
+#define DEBUG 0
+
 class Subpart;
 class Rectangle;
 class Circle;
 class String;
 class Part;
 class Ukulele;
+
+// POSSIBLY ADD ACCEPTABLE COLORS?
 
 /*
  * Subpart Class
@@ -23,6 +28,12 @@ class Subpart {
   public:
     virtual bool quality_check() {
       return weight > 0;
+    }
+    virtual int get_thickness() {
+      return 0;
+    }
+    virtual int get_length() {
+      return 0;
     }
 };
 
@@ -46,8 +57,13 @@ class Rectangle : public Subpart {
       color = "";
     }
     bool quality_check() {
-      std::cout << "RECT QUAL: " << (length > 0 && width > 0 && color != "") << std::endl;
       return length > 0 && width > 0 && color != "";
+    }
+    int get_thickness() {
+      return 0;
+    }
+    int get_length() {
+      return length;
     }
 };
 
@@ -68,8 +84,13 @@ class Circle : public Subpart {
       color = "";
     }
     bool quality_check() {
-      std::cout << "CIRC QUAL: " << (diameter > 0 && color != "") << std::endl;
       return diameter > 0 && color != "";
+    }
+    int get_thickness() {
+      return 0;
+    }
+    int get_length() {
+      return 0;
     }
 };
 
@@ -93,8 +114,13 @@ class String : public Subpart {
       metal_type = "";
     }
     bool quality_check() {
-      std::cout << "STR QUAL: " << (length > 0 && thickness > 0 && metal_type != "") << std::endl;
       return length > 0 && thickness > 0 && metal_type != "";
+    }
+    int get_thickness() {
+      return thickness;
+    }
+    int get_length() {
+      return length;
     }
 };
 
@@ -133,7 +159,6 @@ class Part {
       return;
     }
     void add_subpart(char type, int var1, int var2, int var3, float var4, std::string var5) {
-      subpart_count++;
       Subpart * new_subpart;
       switch(type) {
         case 'r':
@@ -155,18 +180,41 @@ class Part {
       if ( new_subpart != NULL ) {
         subpart_list.push_back(new_subpart);
       }
+      subpart_count++;
+      return;
     }
     void remove_subpart_front() {
       Subpart* temp = subpart_list.front();
       subpart_list.pop_front();
       delete temp;
       temp = NULL;
+      subpart_count--;
+      return;
     }
     void remove_subpart_back() {
       Subpart* temp = subpart_list.back();
       subpart_list.pop_back();
       delete temp;
       temp = NULL;
+      subpart_count--;
+      return;
+    }
+    // Only for use with strings
+    bool check_strings () {
+      if ( subpart_count != 4 ) { // assumming ukuleles can only have 4 strings
+        return false;
+      }
+      for (std::list<Subpart*>::const_iterator iterator1 = subpart_list.begin(), end1 = subpart_list.end(); iterator1 != end1; ++iterator1) {
+        for (std::list<Subpart*>::const_iterator iterator2 = subpart_list.begin(), end2 = subpart_list.end(); iterator2 != end2; ++iterator2) {
+          if ( iterator1 == iterator2 ) {
+            continue;
+          }
+          else if ( (*iterator1)->get_thickness() == (*iterator2)->get_thickness() ) {
+            return false;
+          }
+        }
+      }
+      return true;
     }
     bool quality_check () {
       if ( subpart_count <= 0 ) {
@@ -178,6 +226,16 @@ class Part {
         }
       }
       return true;
+    }
+    int get_max_length () {
+      int max_length = 0, curr_length = 0;
+      for (std::list<Subpart*>::const_iterator iterator = subpart_list.begin(), end = subpart_list.end(); iterator != end; ++iterator) {
+        curr_length = (*iterator)->get_length();
+        if ( curr_length > max_length ) {
+          max_length = curr_length;
+        }
+      }
+      return max_length;
     }
 };
 
@@ -203,9 +261,14 @@ class Ukulele {
       delete body;
     }
     bool quality_check() {
-      // strings longer than neck?
-      // strings all different sizes?
-      return ( headstock->quality_check() && strings->quality_check() && neck->quality_check() && body->quality_check() ); // add quality checks to individual parts
+      bool string_neck_comp = strings->get_max_length() > neck->get_max_length(); // strings longer than neck?
+      bool string_check = strings->check_strings();
+      bool basic_checks = headstock->quality_check() && strings->quality_check() && neck->quality_check() && body->quality_check();
+      if ( DEBUG ) std::cout
+          << "STR_NECK_COMP: " << string_neck_comp << std::endl
+          << "STR_CHECK: " << string_check << std::endl
+          << "BASIC_CHECKS: " << basic_checks << "\n\n";
+      return string_check && basic_checks && string_neck_comp; // add quality checks to individual parts
     }
     float calc_cost() {
       return headstock->get_cost() + strings->get_cost() + neck->get_cost() + body->get_cost();
