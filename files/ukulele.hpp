@@ -14,8 +14,8 @@ class Circle;
 class String;
 class Part;
 class Ukulele;
-
-// POSSIBLY ADD ACCEPTABLE COLORS?
+class Production;
+class Supplier;
 
 /*
  * Subpart Class
@@ -148,6 +148,9 @@ class Part {
       cost = 0.00;
       dist_bet_subpart = 0;
     }
+    void change_supplier (std::string supp) {
+      this->supplier = supp;
+    }
     int subpart_count_print() {
       return subpart_count;
     }
@@ -249,10 +252,10 @@ class Ukulele {
     Part * neck;
     Part * body;
     Ukulele() {   // Constructor
-      headstock = new Part();
-      strings = new Part();
-      neck = new Part();
-      body = new Part();
+      headstock = NULL;
+      strings = NULL;
+      neck = NULL;
+      body = NULL;
     }
     ~Ukulele() {
       delete headstock;
@@ -272,6 +275,81 @@ class Ukulele {
     }
     float calc_cost() {
       return headstock->get_cost() + strings->get_cost() + neck->get_cost() + body->get_cost();
+    }
+};
+
+class Supplier {
+  public:
+    Supplier( int inventory_size, std::string supplier_name ) {
+      name = supplier_name;
+      inventory = inventory_size;
+    }
+    std::string name;
+    int inventory;
+    Part* create_headstock(int length, int width, std::string color) {
+      // create headstock
+      Part * part = new Part();
+      part->add_subpart('r', length, width, 0, 0, color);
+      part->change_supplier(this->name);
+      return part;
+    }
+    Part* create_neck(int length, int width, std::string color) {
+      // create neck
+      Part * part = new Part();
+      part->add_subpart('r', length, width, 0, 0, color);
+      part->change_supplier(this->name);
+      return part;
+    }
+    Part* create_strings(int thickness, int length, int distance, std::string material) {
+      // create strings
+      Part * part = new Part();
+      // need specifications on different thicknesses for different sounds
+      part->add_subpart('s', length, thickness, 0, 0, material);
+      part->add_subpart('s', length, thickness, 0, 0, material);
+      part->add_subpart('s', length, thickness, 0, 0, material);
+      part->add_subpart('s', length, thickness, 0, 0, material);
+      part->update_dist_bet(distance);
+      part->change_supplier(this->name);
+      return part;
+    }
+    Part* create_body(int diameter, int distance, std::string color) {
+      // create body
+      Part * part = new Part();
+      part->add_subpart('c', diameter, 0, 0, 0, color);
+      part->add_subpart('c', diameter, 0, 0, 0, color);
+      part->update_dist_bet(distance);
+      part->change_supplier(this->name);
+      return part;
+    }
+};
+
+class Production {
+  private:
+    int ukulele_count;
+    std::list<Ukulele*> ukulele_list;
+  public:
+    Production() {
+      ukulele_count = 0;
+    }
+    void build_ukulele(Supplier * headstock_sup, Supplier * neck_sup, Supplier * strings_sup, Supplier * body_sup,
+                       int headstock_len, int headstock_wid, std::string headstock_col,
+                       int neck_len, int neck_wid, std::string neck_col,
+                       int strings_thick, int strings_len, int distance, std::string strings_material,
+                       int body_diam, int body_dist, std::string body_col) {
+      Ukulele * new_uk = new Ukulele();
+      // add headstock
+      new_uk->headstock = headstock_sup->create_headstock(headstock_len, headstock_wid, headstock_col);
+      // add neck
+      new_uk->neck = neck_sup->create_neck(neck_len, neck_wid, neck_col);
+      // add strings
+      new_uk->strings = strings_sup->create_strings(strings_thick, strings_len, distance, strings_material);
+      // add body
+      new_uk->body = body_sup->create_body(body_diam, body_dist, body_col);
+      ukulele_list.push_back(new_uk); // push new Ukulele onto list
+    }
+    void destroy_ukulele( Ukulele * destroy_this ) {
+      ukulele_list.remove(destroy_this);  // remove Ukulele from list
+      ukulele_count--;
     }
 };
 
