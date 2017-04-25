@@ -278,6 +278,9 @@ class Ukulele {
     }
 };
 
+/*
+ * Supplier Class
+ */
 class Supplier {
   public:
     Supplier( int inventory_size, std::string supplier_name ) {
@@ -323,6 +326,9 @@ class Supplier {
     }
 };
 
+/*
+ * Production Class
+ */
 class Production {
   private:
     int ukulele_count;
