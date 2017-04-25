@@ -26,6 +26,8 @@ class Subpart {
     float cost_from_supply;
     int weight;
   public:
+    /* VIRTUAL HERE SO I CAN MAKE FUNCTIONS IN THE INHERITED CLASSES
+       BASED SPECIFICALLY ON THE SHAPE NEEDED */
     virtual bool quality_check() {
       return weight > 0;
     }
@@ -358,5 +360,7 @@ class Production {
       ukulele_count--;
     }
 };
+
+/* Test Push */
 
 #endif // UKULELE_H
