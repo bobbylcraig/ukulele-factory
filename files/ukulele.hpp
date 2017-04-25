@@ -206,15 +206,17 @@ class Part {
     }
     // Only for use with strings
     bool check_strings () {
-      if ( subpart_count != 4 ) { // assumming ukuleles can only have 4 strings
+      if ( subpart_count != 4 ) { // assuming ukuleles can only have 4 strings
         return false;
       }
+//      std::cout << "GOT HERE!" << std::endl;
       for (std::list<Subpart*>::const_iterator iterator1 = subpart_list.begin(), end1 = subpart_list.end(); iterator1 != end1; ++iterator1) {
         for (std::list<Subpart*>::const_iterator iterator2 = subpart_list.begin(), end2 = subpart_list.end(); iterator2 != end2; ++iterator2) {
           if ( iterator1 == iterator2 ) {
             continue;
           }
           else if ( (*iterator1)->get_thickness() == (*iterator2)->get_thickness() ) {
+//            std::cout << "Failed here" << std::endl;
             return false;
           }
         }
@@ -310,9 +312,9 @@ class Supplier {
       Part * part = new Part();
       // need specifications on different thicknesses for different sounds
       part->add_subpart('s', length, thickness, 0, 0, material);
-      part->add_subpart('s', length, thickness, 0, 0, material);
-      part->add_subpart('s', length, thickness, 0, 0, material);
-      part->add_subpart('s', length, thickness, 0, 0, material);
+      part->add_subpart('s', length, thickness*2, 0, 0, material);
+      part->add_subpart('s', length, thickness*3, 0, 0, material);
+      part->add_subpart('s', length, thickness*4, 0, 0, material);
       part->update_dist_bet(distance);
       part->change_supplier(this->name);
       return part;
@@ -354,10 +356,19 @@ class Production {
       // add body
       new_uk->body = body_sup->create_body(body_diam, body_dist, body_col);
       ukulele_list.push_back(new_uk); // push new Ukulele onto list
+      ukulele_count++;
     }
     void destroy_ukulele( Ukulele * destroy_this ) {
       ukulele_list.remove(destroy_this);  // remove Ukulele from list
       ukulele_count--;
+    }
+    bool check_all_uk_valid() {
+      for (std::list<Ukulele*>::const_iterator iterator = ukulele_list.begin(), end = ukulele_list.end(); iterator != end; ++iterator) {
+        if ( !((*iterator)->quality_check()) ) {
+          return 0;
+        }
+      }
+      return 1;
     }
 };
 

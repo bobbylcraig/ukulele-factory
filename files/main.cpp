@@ -7,108 +7,100 @@ bool check_bad();
 bool check_bad2();
 bool check_bad3();
 
+Supplier * headstock_supplier = new Supplier(100, "Headstock Supplier");
+Supplier * neck_supplier = new Supplier(100, "Neck Supplier");
+Supplier * strings_supplier = new Supplier(100, "Strings Supplier");
+Supplier * body_supplier = new Supplier(100, "Body Supplier");
+Production factory;
+
 int main()
 {
-//  assert(check_good() == 1);
+  assert(check_good() == 1);
 //  assert(check_bad() == 0);
 //  assert(check_bad2() == 0);
 //  assert(check_bad3() == 0);
-//  std::cout << "All Tests Passed" << std::endl;
+  std::cout << "All Tests Passed" << std::endl;
   return 0;
 }
 
 // Good params
 bool check_good() {
-  Ukulele * test_uk = new Ukulele();
-
-  // Add headstock
-  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
-
-  // Add neck
-  test_uk->neck->add_subpart('r', 26, 4, NULL, NULL, "brown");
-
-  // Add body
-  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
-  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
-  test_uk->body->update_dist_bet(5);
-
-  // Add strings
-  test_uk->strings->add_subpart('s', 65, 24, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
-
-  return test_uk->quality_check();
+  factory.build_ukulele(headstock_supplier, neck_supplier, strings_supplier, body_supplier,
+                        13, 6, "brown",
+                        20, 4, "brown",
+                        65, 37, 1, "nylon",
+                        15, 5, "brown");
+  return factory.check_all_uk_valid();
 }
 
 // Checking negative lengths
-bool check_bad() {
-  Ukulele * test_uk = new Ukulele();
+//bool check_bad() {
+//  Ukulele * test_uk = new Ukulele();
 
-  // Add headstock
-  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
+//  // Add headstock
+//  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
 
-  // Add neck
-  test_uk->neck->add_subpart('r', -20, 4, NULL, NULL, "brown");   // Negative length should make it wrong
+//  // Add neck
+//  test_uk->neck->add_subpart('r', -20, 4, NULL, NULL, "brown");   // Negative length should make it wrong
 
-  // Add body
-  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
-  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
-  test_uk->body->update_dist_bet(5);
+//  // Add body
+//  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
+//  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
+//  test_uk->body->update_dist_bet(5);
 
-  // Add strings
-  test_uk->strings->add_subpart('s', 65, 24, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
+//  // Add strings
+//  test_uk->strings->add_subpart('s', 65, 24, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
 
-  return test_uk->quality_check();
-}
+//  return test_uk->quality_check();
+//}
 
 // Checking neck longer than strings
-bool check_bad2() {
-  Ukulele * test_uk = new Ukulele();
+//bool check_bad2() {
+//  Ukulele * test_uk = new Ukulele();
 
-  // Add headstock
-  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
+//  // Add headstock
+//  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
 
-  // Add neck
-  test_uk->neck->add_subpart('r', 84, 4, NULL, NULL, "brown");   // Too long of a neck
+//  // Add neck
+//  test_uk->neck->add_subpart('r', 84, 4, NULL, NULL, "brown");   // Too long of a neck
 
-  // Add body
-  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
-  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
-  test_uk->body->update_dist_bet(5);
+//  // Add body
+//  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
+//  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
+//  test_uk->body->update_dist_bet(5);
 
-  // Add strings
-  test_uk->strings->add_subpart('s', 65, 24, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
+//  // Add strings
+//  test_uk->strings->add_subpart('s', 65, 24, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
 
-  return test_uk->quality_check();
-}
+//  return test_uk->quality_check();
+//}
 
 // Checking two strings being the same thickness
-bool check_bad3() {
-  Ukulele * test_uk = new Ukulele();
+//bool check_bad3() {
+//  Ukulele * test_uk = new Ukulele();
 
-  // Add headstock
-  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
+//  // Add headstock
+//  test_uk->headstock->add_subpart('r', 13, 6, NULL, NULL, "brown");
 
-  // Add neck
-  test_uk->neck->add_subpart('r', 26, 4, NULL, NULL, "brown");
+//  // Add neck
+//  test_uk->neck->add_subpart('r', 26, 4, NULL, NULL, "brown");
 
-  // Add body
-  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
-  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
-  test_uk->body->update_dist_bet(5);
+//  // Add body
+//  test_uk->body->add_subpart('c', 15, NULL, NULL, NULL, "brown");
+//  test_uk->body->add_subpart('c', 20, NULL, NULL, NULL, "brown");
+//  test_uk->body->update_dist_bet(5);
 
-  // Add strings
-  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon"); // same as below
-  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon"); // same as above
-  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
-  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
+//  // Add strings
+//  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon"); // same as below
+//  test_uk->strings->add_subpart('s', 65, 30, NULL, NULL, "nylon"); // same as above
+//  test_uk->strings->add_subpart('s', 65, 37, NULL, NULL, "nylon");
+//  test_uk->strings->add_subpart('s', 65, 26, NULL, NULL, "nylon");
 
-  return test_uk->quality_check();
-}
+//  return test_uk->quality_check();
+//}
