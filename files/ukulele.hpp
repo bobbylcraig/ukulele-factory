@@ -22,7 +22,6 @@ class Supplier;
  */
 class Subpart {
   protected:
-    Part * parent;
     float cost_from_supply;
     int weight;
   public:
@@ -36,6 +35,10 @@ class Subpart {
     }
     virtual int get_length() {
       return 0;
+    }
+    virtual ~Subpart() {
+      cost_from_supply = 0.0;
+      weight = 0;
     }
 };
 
@@ -163,7 +166,12 @@ class Part {
       dist_bet_subpart = newDist;
       return;
     }
+    int get_distance_bet() {
+      return dist_bet_subpart;
+    }
     void add_subpart(char type, int var1, int var2, int var3, float var4, std::string var5) {
+      (void)var3;
+      (void)var4;
       Subpart * new_subpart;
       switch(type) {
         case 'r':
@@ -215,8 +223,9 @@ class Part {
           if ( iterator1 == iterator2 ) {
             continue;
           }
-          else if ( (*iterator1)->get_thickness() == (*iterator2)->get_thickness() ) {
-//            std::cout << "Failed here" << std::endl;
+          else if ( (*iterator1)->get_thickness() == (*iterator2)->get_thickness() || this->get_distance_bet() < (*iterator1)->get_thickness() ) {
+            if ( DEBUG )
+              std::cout << "Failed here because " << this->get_distance_bet() << " >= " << (*iterator1)->get_thickness() << std::endl;
             return false;
           }
         }
@@ -311,15 +320,16 @@ class Supplier {
       // create strings
       Part * part = new Part();
       // need specifications on different thicknesses for different sounds
+      // multipliers based off of some string gauges on some website
+      part->add_subpart('s', length, thickness*0.3, 0, 0, material);
+      part->add_subpart('s', length, thickness*0.5, 0, 0, material);
+      part->add_subpart('s', length, thickness*0.7, 0, 0, material);
       part->add_subpart('s', length, thickness, 0, 0, material);
-      part->add_subpart('s', length, thickness*2, 0, 0, material);
-      part->add_subpart('s', length, thickness*3, 0, 0, material);
-      part->add_subpart('s', length, thickness*4, 0, 0, material);
       part->update_dist_bet(distance);
       part->change_supplier(this->name);
       return part;
     }
-    Part* create_body(int diameter, int distance, std::string color) {
+    Part* create_body( int diameter, int distance, std::string color ) {
       // create body
       Part * part = new Part();
       part->add_subpart('c', diameter, 0, 0, 0, color);
@@ -341,11 +351,11 @@ class Production {
     Production() {
       ukulele_count = 0;
     }
-    void build_ukulele(Supplier * headstock_sup, Supplier * neck_sup, Supplier * strings_sup, Supplier * body_sup,
-                       int headstock_len, int headstock_wid, std::string headstock_col,
-                       int neck_len, int neck_wid, std::string neck_col,
-                       int strings_thick, int strings_len, int distance, std::string strings_material,
-                       int body_diam, int body_dist, std::string body_col) {
+    void build_ukulele( Supplier * headstock_sup, Supplier * neck_sup, Supplier * strings_sup, Supplier * body_sup,
+                        int headstock_len, int headstock_wid, std::string headstock_col,
+                        int neck_len, int neck_wid, std::string neck_col,
+                        int strings_thick, int strings_len, int distance, std::string strings_material,
+                        int body_diam, int body_dist, std::string body_col ) {
       Ukulele * new_uk = new Ukulele();
       // add headstock
       new_uk->headstock = headstock_sup->create_headstock(headstock_len, headstock_wid, headstock_col);
@@ -370,8 +380,34 @@ class Production {
       }
       return 1;
     }
+    bool check_indiv_uk_valid() {
+      int i = 0;
+      bool status = true;
+      for (std::list<Ukulele*>::const_iterator iterator = ukulele_list.begin(), end = ukulele_list.end(); iterator != end; ++iterator, i++) {
+        std::cout << "Ukulele " << i + 1 << ": ";
+        if ( ((*iterator)->quality_check()) )
+          std::cout << "VALID";
+        else {
+          status = false;
+          std::cout << "INVALID";
+        }
+        std::cout << std::endl;
+      }
+      if ( !status ) {
+        std::cout << "*Your factory contains at least one faulty ukulele." << std::endl;
+      }
+      else {
+        std::cout << "*Your factory contains no faulty ukuleles." << std::endl;
+      }
+      return status;
+    }
+    void uk_detail_report() {
+      std::cout << "There are " << ukulele_count << " ukuleles." << std::endl;
+    }
+    void write_to_log ( std::string filename ) {
+      filename = "dad";
+      return;
+    }
 };
-
-/* Test Push */
 
 #endif // UKULELE_H
